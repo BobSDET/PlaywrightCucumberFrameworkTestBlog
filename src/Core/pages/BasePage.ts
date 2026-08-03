@@ -79,4 +79,8 @@ export class BasePage {
     async waitForVisible(locator: Locator): Promise<void> {
         await locator.waitFor({ state: 'visible' });
     }
+
+    async scrollToElement(locator: Locator): Promise<void> {
+    await locator.scrollIntoViewIfNeeded();
+}
 }
