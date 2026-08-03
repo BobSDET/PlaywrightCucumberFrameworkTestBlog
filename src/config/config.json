@@ -1,0 +1,14 @@
+{
+  "qa": {
+    "baseUrl": "https://testautomationpractice.blogspot.com/",
+    "browser": "chromium",
+    "headless": false,
+    "timeout": 30000
+  },
+  "uat": {
+    "baseUrl": "https://testautomationpractice.blogspot.com/",
+    "browser": "chromium",
+    "headless": true,
+    "timeout": 30000
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "playwrightcucumberframeworktestblog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "ts-node src/scripts/CleanReports.ts",
+    "generate-feature": "ts-node src/scripts/GenerateFeature.ts",
+    "cucumber": "cucumber-js --parallel 2",
+    "chrome": "cross-env BROWSER=chromium cucumber-js",
+    "firefox": "cross-env BROWSER=firefox cucumber-js --parallel 3",
+    "webkit": "cross-env BROWSER=webkit cucumber-js --parallel 3",
+    "test": "ts-node src/scripts/RetryRunner.ts",
+    "api": "cucumber-js --tags \"@api\"",
+    "chrome-test": "npm run clean && npm run generate-feature && npm run chrome",
+    "firefox-test": "npm run clean && npm run generate-feature && npm run firefox",
+    "webkit-test": "npm run clean && npm run generate-feature && npm run webkit",
+    "smoke": "cross-env BROWSER=chromium cucumber-js --tags \"@Smoke and not @api\"",
+    "regression": "cross-env BROWSER=chromium cucumber-js --tags \"@Regression and not @api\"",
+    "sanity": "cross-env BROWSER=chromium cucumber-js --tags \"@Sanity and not @api\"",
+    "smoke-report": "npm run clean && npm run generate-feature && npm run smoke && npm run allure",
+    "regression-report": "npm run clean && npm run generate-feature && npm run regression && npm run allure",
+    "all-browsers": "npm run chrome-test && npm run firefox-test && npm run webkit-test",
+    "allure": "allure generate allure-results --clean -o allure-report",
+    "open-report": "allure open allure-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cucumber/cucumber": "^13.2.0",
+    "@playwright/test": "^1.62.0",
+    "@types/node": "^26.1.1",
+    "allure-cucumberjs": "^3.10.2",
+    "allure-js-commons": "^3.10.2",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
+    "rimraf": "^6.1.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
