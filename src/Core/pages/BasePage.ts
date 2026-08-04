@@ -80,7 +80,5 @@ export class BasePage {
         await locator.waitFor({ state: 'visible' });
     }
 
-    async scrollToElement(locator: Locator): Promise<void> {
-    await locator.scrollIntoViewIfNeeded();
-}
+    
 }
