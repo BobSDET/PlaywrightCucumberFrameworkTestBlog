@@ -15,6 +15,7 @@
     "chrome-test": "npm run clean && npm run generate-feature && npm run chrome",
     "firefox-test": "npm run clean && npm run generate-feature && npm run firefox",
     "webkit-test": "npm run clean && npm run generate-feature && npm run webkit",
+     "ci": "npm run clean && npm run generate && npm run smoke",
     "smoke": "cross-env BROWSER=chromium cucumber-js --tags \"@Smoke and not @api\"",
     "regression": "cross-env BROWSER=chromium cucumber-js --tags \"@Regression and not @api\"",
     "sanity": "cross-env BROWSER=chromium cucumber-js --tags \"@Sanity and not @api\"",
