@@ -26,24 +26,23 @@ export class BrowserManager {
           
         }
 
-        const browser = await browserType.launch({headless});
+        //const browser = await browserType.launch({headless});
+        const isCI = process.env.CI === "true";
         const launchOptions: LaunchOptions = {headless};
 
         // CI/Jenkins configuration
-    if (process.env.CI === "true") {
-
-        Logger.info("CI environment detected");
-
-        if (browserName.toLowerCase() === "firefox") {
-            launchOptions.args = [
-                "-headless"
-            ];
+    if (isCI) {
+            Logger.info("CI environment detected");
         }
-    }
 
-        Logger.pass(`${browserName} browser launched successfully`);
+        const browser = await browserType.launch(launchOptions);
+
+        Logger.pass(
+            `${browserName} browser launched successfully`
+        );
 
         return browser;
+    
     }
 
     static async createContext(browser: Browser): Promise<BrowserContext> {
