@@ -15,6 +15,9 @@ pipeline {
             description: 'Select the browser'
         )
     }
+    environment {
+    CI = 'true'
+    }
 
     stages {
 
@@ -44,6 +47,7 @@ pipeline {
                     echo "======================================"
                     echo "TEST TYPE : ${params.TEST_TYPE}"
                     echo "BROWSER   : ${params.BROWSER}"
+                     echo "CI      : ${env.CI}"
                     echo "======================================"
 
                     if (params.TEST_TYPE == 'smoke') {
