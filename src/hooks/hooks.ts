@@ -11,13 +11,14 @@ import { AssertionContex } from "../assertion/AssertionContext";
 
 
 
+
 Before({ tags: "not @api" }, async function (scenario) 
 {
     try{
     const world = this as CustomWorld;
     
     console.log("================================================");
-    console.log("Scenario Name:", scenario.pickle.name, allure.tags); 
+    console.log("Scenario Name:", scenario.pickle.name, scenario.pickle.tags); 
     console.log("================================================");
 
     Logger.info("========== Test Started ==========");
