@@ -1,18 +1,20 @@
 pipeline {
 
     agent any
+
     parameters {
-    choice(
-        name: 'SUITE',
-        choices: [
-            'smoke',
-            'regression',
-            'sanity',
-            'api'
-        ],
-        description: 'Select Test Suite'
-    )
-}
+        choice(
+            name: 'TEST_TYPE',
+            choices: ['smoke', 'regression', 'sanity'],
+            description: 'Select the test suite to execute'
+        )
+
+        choice(
+            name: 'BROWSER',
+            choices: ['chromium', 'firefox', 'webkit'],
+            description: 'Select the browser'
+        )
+    }
 
     stages {
 
@@ -36,11 +38,42 @@ pipeline {
         }
 
         stage('Run Tests') {
-    steps {
-        bat "npm run ${params.SUITE}"
-    }
+            steps {
+                script {
+
+                    echo "======================================"
+                    echo "TEST TYPE : ${params.TEST_TYPE}"
+                    echo "BROWSER   : ${params.BROWSER}"
+                    echo "======================================"
+
+                    if (params.TEST_TYPE == 'smoke') {
+
+                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Smoke and not @api\""
+
+                    } else if (params.TEST_TYPE == 'regression') {
+
+                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Regression and not @api\""
+
+                    } else if (params.TEST_TYPE == 'sanity') {
+
+                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Sanity and not @api\""
+                    }
+                }
+            }
+        }
     }
 
-    }
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
 
+        success {
+            echo 'TEST EXECUTION PASSED'
+        }
+
+        failure {
+            echo 'TEST EXECUTION FAILED'
+        }
+    }
 }
