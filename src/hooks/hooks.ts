@@ -18,7 +18,7 @@ Before({ tags: "not @api" }, async function (scenario)
     const world = this as CustomWorld;
     
     console.log("================================================");
-    console.log("Scenario Name:", scenario.pickle.name, scenario.pickle.tags); 
+    console.log("Scenario Name:", scenario.pickle.name,); 
     console.log("================================================");
 
     Logger.info("========== Test Started ==========");
