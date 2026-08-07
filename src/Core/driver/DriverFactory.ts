@@ -3,6 +3,7 @@ import { ConfigReader } from "../../config/ConfigReader";
 import { CustomWorld } from "../world/CustomWorld";
 import { PageManager } from "../pages/PageManager";
 import { ServiceManager } from "../../services/ServiceManager";
+import { Logger } from "../../logger/logger";
 
 export class DriverFactory {
 
@@ -15,14 +16,13 @@ export class DriverFactory {
 
         // Use headless mode in Jenkins/CI
         const headless =
-            process.env.CI === "true"
-                ? true
-                : config.headless;
+    process.env.HEADLESS !== undefined
+        ? process.env.HEADLESS.toLowerCase() === "true"
+        : config.headless;
 
-        console.log(`Browser: ${browserName}`);
-        console.log(`Headless: ${headless}`);
-        console.log(`CI: ${process.env.CI}`);
-
+        Logger.info(`Browser: ${browserName}`);
+    Logger.info(`Headless: ${headless}`);
+    Logger.info(`CI: ${process.env.CI}`);
 
         world.browser = await BrowserManager.launchBrowser(browserName, config.headless);
 
