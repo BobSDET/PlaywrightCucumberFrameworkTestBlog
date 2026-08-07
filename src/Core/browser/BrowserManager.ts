@@ -27,6 +27,19 @@ export class BrowserManager {
         }
 
         const browser = await browserType.launch({headless});
+        const launchOptions: LaunchOptions = {headless};
+
+        // CI/Jenkins configuration
+    if (process.env.CI === "true") {
+
+        Logger.info("CI environment detected");
+
+        if (browserName.toLowerCase() === "firefox") {
+            launchOptions.args = [
+                "-headless"
+            ];
+        }
+    }
 
         Logger.pass(`${browserName} browser launched successfully`);
 
@@ -36,15 +49,22 @@ export class BrowserManager {
     static async createContext(browser: Browser): Promise<BrowserContext> {
 
     Logger.info("Creating browser context");
+    Logger.info(`Browser connected: ${browser.isConnected()}`);
 
-    return await browser.newContext({
-
+    const context = await browser.newContext({
         viewport: {
             width: 1920,
             height: 1080
         }
-
     });
+
+    Logger.pass("Browser context created successfully");
+
+    Logger.info(`Browser connected after context creation: ${browser.isConnected()}`);
+
+    return context
+
+  
 
 }
 
