@@ -48,16 +48,15 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
+ bat """
+                echo ========================================
+                echo Browser: %BROWSER%
+                echo Tag: %TAG%
+                echo Headless: %HEADLESS%
+                echo ========================================
 
-                    echo "======================================"
-                    echo "Tag : %TAG%"
-                    echo "Browser   : %BROWSER%"
-                     echo "Headless: %HEADLESS%"
-                    echo "======================================"
-
-                    bat """
-            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
-        """
+                npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
+            """
                 }
             }
         }
