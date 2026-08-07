@@ -48,15 +48,15 @@ pipeline {
 
                     if (params.TEST_TYPE == 'smoke') {
 
-                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Smoke and not @api\""
+                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Smoke and not @api\""
 
                     } else if (params.TEST_TYPE == 'regression') {
 
-                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Regression and not @api\""
+                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Regression and not @api\""
 
                     } else if (params.TEST_TYPE == 'sanity') {
 
-                        bat "cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Sanity and not @api\""
+                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Sanity and not @api\""
                     }
                 }
             }
