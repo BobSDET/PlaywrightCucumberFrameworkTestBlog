@@ -11,7 +11,7 @@ export class DriverFactory {
         const config = ConfigReader.getConfig();
         
 
-        const browserName = process.env.BROWSER || config.browser || "Firefox";
+        const browserName = process.env.BROWSER || config.browser || "chromium";
 
         // Use headless mode in Jenkins/CI
         const headless =
