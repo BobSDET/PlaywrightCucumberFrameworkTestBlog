@@ -50,9 +50,9 @@ pipeline {
                 script {
 
                     echo "======================================"
-                    echo Tag : %TAG%
-                    echo Browser   : %BROWSER%
-                     echo Headless: %HEADLESS%
+                    echo "Tag : %TAG%"
+                    echo "Browser   : %BROWSER%"
+                     echo "Headless: %HEADLESS%"
                     echo "======================================"
 
                     bat """
