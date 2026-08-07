@@ -18,7 +18,7 @@ module.exports = {
       "allure-cucumberjs/reporter"
     ],
     formatOptions: {
-      resultsDir: "allure-results"
+      resultsDir: "./allure-results"
     }
   }
 }
