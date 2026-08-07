@@ -9,8 +9,20 @@ export class DriverFactory {
     static async initialize(world: CustomWorld): Promise<void> {
 
         const config = ConfigReader.getConfig();
+        
 
         const browserName = process.env.BROWSER || config.browser || "chromium";
+
+        // Use headless mode in Jenkins/CI
+        const headless =
+            process.env.CI === "true"
+                ? true
+                : config.headless;
+
+        console.log(`Browser: ${browserName}`);
+        console.log(`Headless: ${headless}`);
+        console.log(`CI: ${process.env.CI}`);
+
 
         world.browser = await BrowserManager.launchBrowser(browserName, config.headless);
 
@@ -25,7 +37,9 @@ export class DriverFactory {
 
     static async quit(world: CustomWorld): Promise<void>{
 
-    await BrowserManager.closeBrowser(world.browser);
+    if (world.browser) {
+            await BrowserManager.closeBrowser(world.browser);
+        }
 
     }
 
