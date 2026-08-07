@@ -14,6 +14,11 @@ pipeline {
             choices: ['chromium', 'firefox', 'webkit'],
             description: 'Select the browser'
         )
+        booleanParam(
+        name: 'HEADLESS',
+        defaultValue: false,
+        description: 'Run browser in headless mode'
+    )
     }
     environment {
     CI = 'true'
@@ -50,18 +55,9 @@ pipeline {
                      echo "CI      : ${env.CI}"
                     echo "======================================"
 
-                    if (params.TEST_TYPE == 'smoke') {
-
-                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Smoke and not @api\""
-
-                    } else if (params.TEST_TYPE == 'regression') {
-
-                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Regression and not @api\""
-
-                    } else if (params.TEST_TYPE == 'sanity') {
-
-                        bat "npx cross-env BROWSER=${params.BROWSER} cucumber-js --config cucumber.js --tags \"@Sanity and not @api\""
-                    }
+                    bat """
+            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
+        """
                 }
             }
         }
