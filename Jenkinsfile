@@ -50,9 +50,9 @@ pipeline {
                 script {
 
                     echo "======================================"
-                    echo "TEST TYPE : ${params.TEST_TYPE}"
-                    echo "BROWSER   : ${params.BROWSER}"
-                     echo "CI      : ${env.CI}"
+                    echo Tag : %TAG%
+                    echo Browser   : %BROWSER%
+                     echo Headless: %HEADLESS%
                     echo "======================================"
 
                     bat """
