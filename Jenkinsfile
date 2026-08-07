@@ -1,6 +1,18 @@
 pipeline {
 
     agent any
+    parameters {
+    choice(
+        name: 'SUITE',
+        choices: [
+            'smoke',
+            'regression',
+            'sanity',
+            'api'
+        ],
+        description: 'Select Test Suite'
+    )
+}
 
     stages {
 
@@ -24,10 +36,10 @@ pipeline {
         }
 
         stage('Run Tests') {
-            steps {
-                bat 'npm run cucumber'
-            }
-        }
+    steps {
+        bat "npm run ${params.SUITE}"
+    }
+    }
 
     }
 
