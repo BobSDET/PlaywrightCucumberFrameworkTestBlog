@@ -6,10 +6,10 @@
   "scripts": {
     "clean": "ts-node src/scripts/CleanReports.ts",
     "generate-feature": "ts-node src/scripts/GenerateFeature.ts",
-    "cucumber": "cucumber-js --config cucumber.js --parallel 2",
+    "cucumber": "cucumber-js --config cucumber.js",
     "chrome": "cross-env BROWSER=chromium cucumber-js",
-    "firefox": "cross-env BROWSER=firefox cucumber-js --parallel 3",
-    "webkit": "cross-env BROWSER=webkit cucumber-js --parallel 3",
+    "firefox": "cross-env BROWSER=firefox cucumber-js",
+    "webkit": "cross-env BROWSER=webkit cucumber-js",
     "test": "ts-node src/scripts/RetryRunner.ts",
     "api": "cucumber-js --tags \"@api\"",
     "chrome-test": "npm run clean && npm run generate-feature && npm run chrome",
