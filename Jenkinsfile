@@ -3,6 +3,7 @@ pipeline {
     agent any
 
     parameters {
+
         choice(
             name: 'TAG',
             choices: ['Smoke', 'Regression', 'Sanity'],
@@ -14,14 +15,16 @@ pipeline {
             choices: ['chromium', 'firefox', 'webkit'],
             description: 'Select the browser'
         )
+
         booleanParam(
-        name: 'HEADLESS',
-        defaultValue: false,
-        description: 'Run browser in headless mode'
-    )
+            name: 'HEADLESS',
+            defaultValue: false,
+            description: 'Run browser in headless mode'
+        )
     }
+
     environment {
-    CI = 'true'
+        CI = 'true'
     }
 
     stages {
@@ -48,23 +51,26 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    catchError(
-                buildResult: 'FAILURE',
-                stageResult: 'FAILURE'
-            ) {
- bat """
-                echo ========================================
-                echo Browser: %BROWSER%
-                echo Tag: %TAG%
-                echo Headless: %HEADLESS%
-                echo ========================================
 
-                npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
-            """
-                }
+                    catchError(
+                        buildResult: 'FAILURE',
+                        stageResult: 'FAILURE'
+                    ) {
+
+                        bat """
+                            echo ========================================
+                            echo Browser: %BROWSER%
+                            echo Tag: %TAG%
+                            echo Headless: %HEADLESS%
+                            echo ========================================
+
+                            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
+                        """
+                    }
                 }
             }
         }
+
         stage('Generate Allure Report') {
             steps {
                 bat 'npm run allure'
@@ -73,17 +79,17 @@ pipeline {
     }
 
     post {
+
         always {
-            echo 'Allure report generation completed.'
+
+            echo 'Pipeline execution completed.'
+
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
+            ])
         }
-
-        allure([
-            includeProperties: false,
-            jdk: '',
-            results: [[path: 'allure-results']]
-        ])
-    }
-
 
         success {
             echo 'TEST EXECUTION PASSED'
