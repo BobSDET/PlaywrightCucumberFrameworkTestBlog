@@ -48,6 +48,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
+                    catchError(
+                buildResult: 'FAILURE',
+                stageResult: 'FAILURE'
+            ) {
  bat """
                 echo ========================================
                 echo Browser: %BROWSER%
@@ -58,14 +62,28 @@ pipeline {
                 npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
             """
                 }
+                }
+            }
+        }
+        stage('Generate Allure Report') {
+            steps {
+                bat 'npm run allure'
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline execution completed.'
+            echo 'Allure report generation completed.'
         }
+
+        allure([
+            includeProperties: false,
+            jdk: '',
+            results: [[path: 'allure-results']]
+        ])
+    }
+
 
         success {
             echo 'TEST EXECUTION PASSED'
