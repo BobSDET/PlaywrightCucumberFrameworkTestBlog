@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import { RetryConfig } from "../config/RetryConfig";
+import { config } from "process";
 
 function runCommand(command: string): boolean {
     try {
@@ -17,6 +18,15 @@ runCommand("npm run clean");
 console.log("Generating features...");
 runCommand("npm run generate-feature");
 
+const browser = process.env.BROWSER || "chromium";
+const headless = process.env.HEADLESS || "true";
+const tag = process.env.TAG || "Regression";
+
+console.log('Browser : ${browser}');
+console.log('Headless : ${headless}');
+console.log('Tag : ${tag}');
+console.log('Max Retry : ${RetryConfig.MAX_RETRY}');
+
 let passed = false;
 
 for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
@@ -26,14 +36,23 @@ for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
     console.log(`Execution Attempt ${retry + 1}`);
     console.log(`============================`);
 
-    passed = runCommand("npm run chrome");
+    const command = 'npx cross-env BROWSER=${browser} HEADLESS=${headless}' + 'cucumber-js --config cucumber.js --TAG "@${tag} and not @api"';
+
+   console.log('Execution : ${command}');
+    passed = runCommand(command);
 
     if (passed) {
-        console.log("All tests passed.");
+        console.log("\nAll tests passed.");
         break;
     }
 
-    console.log("Some tests failed.");
+    if(retry == RetryConfig.MAX_RETRY)
+    {
+    console.log('Some tests failed. Retrying...' + '(${retry + 1}/${RetryConfig.MAX_RETRY})' );
+    }
+    else{
+        console.log("Maximum Retry Attempt Reached");
+    }
     }
 
 process.exit(passed ? 0 : 1);

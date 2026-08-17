@@ -24,7 +24,7 @@ export class DriverFactory {
     Logger.info(`Headless: ${headless}`);
     Logger.info(`CI: ${process.env.CI}`);
 
-        world.browser = await BrowserManager.launchBrowser(browserName, config.headless);
+        world.browser = await BrowserManager.launchBrowser(browserName, headless);
 
         world.context = await BrowserManager.createContext(world.browser);
 
