@@ -11,6 +11,7 @@
     "firefox": "cross-env BROWSER=firefox cucumber-js",
     "webkit": "cross-env BROWSER=webkit cucumber-js",
     "test": "ts-node src/scripts/RetryRunner.ts",
+    "retry": "ts-node src/scripts/RetryRunner.ts",
     "api": "cucumber-js --tags \"@api\"",
     "chrome-test": "npm run clean && npm run generate-feature && npm run chrome",
     "firefox-test": "npm run clean && npm run generate-feature && npm run firefox",
@@ -21,7 +22,7 @@
     "sanity": "cross-env BROWSER=chromium cucumber-js --config cucumber.js --tags \"@Sanity and not @api\"",
     "smoke-report": "npm run clean && npm run generate-feature && npm run smoke && npm run allure",
     "regression-report": "npm run clean && npm run generate-feature && npm run regression && npm run allure",
-    "all-browsers": "npm run chrome-test && npm run firefox-test && npm run webkit-test",
+    "all": "npm run chrome-test && npm run firefox-test && npm run webkit-test",
     "allure": "allure generate allure-results --clean -o allure-report",
     "open-report": "allure open allure-report"
   },

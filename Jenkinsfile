@@ -12,7 +12,7 @@ pipeline {
 
         choice(
             name: 'BROWSER',
-            choices: ['chromium', 'firefox', 'webkit'],
+            choices: ['chromium', 'firefox', 'webkit', 'all'],
             description: 'Select the browser'
         )
 
@@ -64,8 +64,32 @@ pipeline {
                             echo Headless: %HEADLESS%
                             echo ========================================
 
-                            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% cucumber-js --config cucumber.js --tags "@%TAG% and not @api"
+                            if(params.BROWSER == 'all')
+                            {
+                             echo 'Running tests on ALL browsers'
+                                bat """
+                    npx cross-env BROWSER=chromium HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
+                """
+
+                bat """
+                    npx cross-env BROWSER=firefox HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
+                """
+
+                bat """
+                    npx cross-env BROWSER=webkit HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
+                """
+                            }
+
+                            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% TAG=%TAG% ts-node src/scripts/RetryRunner.ts
                         """
+                    }
+                    else
+                    {
+                        echo "Running tests on ${params.BROWSER}"
+
+                bat """
+                    npx cross-env BROWSER=${params.BROWSER} HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
+                """
                     }
                 }
             }
