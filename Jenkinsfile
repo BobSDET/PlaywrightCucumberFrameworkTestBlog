@@ -49,51 +49,66 @@ pipeline {
         }
 
         stage('Run Tests') {
-            steps {
-                script {
+    steps {
+        script {
 
-                    catchError(
-                        buildResult: 'FAILURE',
-                        stageResult: 'FAILURE'
-                    ) {
+            echo '========================================'
+            echo "Browser: ${params.BROWSER}"
+            echo "Tag: ${params.TAG}"
+            echo "Headless: ${params.HEADLESS}"
+            echo '========================================'
 
-                        bat """
-                            echo ========================================
-                            echo Browser: %BROWSER%
-                            echo Tag: %TAG%
-                            echo Headless: %HEADLESS%
-                            echo ========================================
+            catchError(
+                buildResult: 'FAILURE',
+                stageResult: 'FAILURE'
+            ) {
 
-                            if(params.BROWSER == 'all')
-                            {
-                             echo 'Running tests on ALL browsers'
-                                bat """
-                    npx cross-env BROWSER=chromium HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
-                """
+                if (params.BROWSER == 'all') {
 
-                bat """
-                    npx cross-env BROWSER=firefox HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
-                """
+                    echo 'Running tests on ALL browsers'
 
-                bat """
-                    npx cross-env BROWSER=webkit HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
-                """
-                            }
+                    bat """
+                        echo ========================================
+                        echo Running Chromium
+                        echo ========================================
 
-                            npx cross-env BROWSER=%BROWSER% HEADLESS=%HEADLESS% TAG=%TAG% ts-node src/scripts/RetryRunner.ts
-                        """
-                    }
-                    else
-                    {
-                        echo "Running tests on ${params.BROWSER}"
+                        npx cross-env BROWSER=chromium HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
+                    """
 
-                bat """
-                    npx cross-env BROWSER=${params.BROWSER} HEADLESS=${params.HEADLESS} cucumber-js --config cucumber.js --tags "@${params.TAG} and not @api"
-                """
-                    }
+                    bat """
+                        echo ========================================
+                        echo Running Firefox
+                        echo ========================================
+
+                        npx cross-env BROWSER=firefox HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
+                    """
+
+                    bat """
+                        echo ========================================
+                        echo Running WebKit
+                        echo ========================================
+
+                        npx cross-env BROWSER=webkit HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
+                    """
+
+                } else {
+
+                    echo "Running tests on ${params.BROWSER}"
+
+                    bat """
+                        echo ========================================
+                        echo Running ${params.BROWSER}
+                        echo Tag: ${params.TAG}
+                        echo Headless: ${params.HEADLESS}
+                        echo ========================================
+
+                        npx cross-env BROWSER=${params.BROWSER} HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
+                    """
                 }
             }
         }
+    }
+}
 
         stage('Generate Allure Report') {
             steps {
