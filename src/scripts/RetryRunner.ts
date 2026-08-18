@@ -4,7 +4,7 @@ import { RetryConfig } from "../config/RetryConfig";
 
 function runCommand(command: string): boolean {
     try {
-        console.log(`Execution: ${command}`);
+        
         execSync(command, { stdio: "inherit" });
         return true;
     } 
@@ -14,18 +14,24 @@ function runCommand(command: string): boolean {
 }
 
 console.log("Cleaning reports...");
-runCommand("npm run clean");
+if (!runCommand("npm run clean")) {
+    console.error("Failed to clean reports.");
+    process.exit(1);
+}
 
 console.log("Generating features...");
-runCommand("npm run generate-feature");
+if (!runCommand("npm run generate-feature")) {
+    console.error("Failed to generate feature files.");
+    process.exit(1);
+}
 
 const browser = process.env.BROWSER || "chromium";
 const headless = process.env.HEADLESS || "true";
 const tag = process.env.TAG || "Regression";
 
-console.log('Browser : ${browser}');
-console.log('Headless : ${headless}');
-console.log('Tag : ${tag}');
+console.log(`Browser   : ${browser}`);
+console.log(`Headless  : ${headless}`);
+console.log(`Tag : ${tag}`);
 console.log('Max Retry : ${RetryConfig.MAX_RETRY}');
 
 let passed = false;
@@ -55,7 +61,10 @@ for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
     console.log('Some tests failed. Retrying...' + '(${retry + 1}/${RetryConfig.MAX_RETRY})' );
     }
     else{
-        console.log("Maximum Retry Attempt Reached");
+        console.error("\n========================================");
+        console.error("Maximum retry attempts reached.");
+        console.error("Tests failed.");
+        console.error("========================================");
     }
     }
 
