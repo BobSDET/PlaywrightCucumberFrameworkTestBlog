@@ -116,6 +116,20 @@ pipeline {
     }
 }
 
+stage('Verify Allure Results') {
+    steps {
+        bat '''
+            echo ========================================
+            echo ALLURE RESULTS
+            echo ========================================
+            dir allure-results
+            echo.
+            echo RESULT FILE COUNT:
+            powershell -Command "(Get-ChildItem allure-results -Filter *.json).Count"
+        '''
+    }
+}
+
         stage('Generate Allure Report') {
             steps {
                 bat 'npm run allure'
