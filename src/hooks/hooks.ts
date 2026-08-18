@@ -12,9 +12,19 @@ import { AssertionContex } from "../assertion/AssertionContext";
 
 
 
+
 Before({ tags: "not @api" }, async function (scenario) 
 {
     try{
+        const browser = process.env.BROWSER || "chromium";
+    const headless = process.env.HEADLESS || "true";
+    const ci = process.env.CI || "false";
+
+    await allure.parameter("Browser", browser);
+    await allure.parameter("Headless", headless);
+    await allure.parameter("CI", ci);
+
+    // existing browser initialization code...
     const world = this as CustomWorld;
     
     console.log("================================================");
