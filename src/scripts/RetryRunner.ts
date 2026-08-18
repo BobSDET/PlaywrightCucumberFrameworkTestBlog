@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 import { RetryConfig } from "../config/RetryConfig";
-import { config } from "process";
+
 
 function runCommand(command: string): boolean {
     try {
@@ -36,7 +36,7 @@ for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
     console.log(`Execution Attempt ${retry + 1}`);
     console.log(`============================`);
 
-    const command = 'npx cross-env BROWSER=${browser} HEADLESS=${headless}' + 'cucumber-js --config cucumber.js --TAG "@${tag} and not @api"';
+    const command = 'npx cross-env BROWSER=${browser} HEADLESS=${headless}' + 'cucumber-js' + '--config cucumber.js'+ '--tag "@${tag} and not @api"';
 
    console.log('Execution : ${command}');
     passed = runCommand(command);
