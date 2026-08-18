@@ -32,7 +32,7 @@ const tag = process.env.TAG || "Regression";
 console.log(`Browser   : ${browser}`);
 console.log(`Headless  : ${headless}`);
 console.log(`Tag : ${tag}`);
-console.log('Max Retry : ${RetryConfig.MAX_RETRY}');
+console.log(`Max Retry : ${RetryConfig.MAX_RETRY}`);
 
 let passed = false;
 
