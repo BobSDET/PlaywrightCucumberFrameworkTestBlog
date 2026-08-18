@@ -1,0 +1,8 @@
+services:
+  tests:
+    image: playwright-cucumber-framework
+    environment:
+      BROWSER: ${BROWSER:-chromium}
+      HEADLESS: ${HEADLESS:-true}
+      TAG: ${TAG:-Regression}
+      CI: "true"
