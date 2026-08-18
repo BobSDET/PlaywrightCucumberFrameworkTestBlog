@@ -4,6 +4,7 @@ import { RetryConfig } from "../config/RetryConfig";
 
 function runCommand(command: string): boolean {
     try {
+        console.log(`Execution: ${command}`);
         execSync(command, { stdio: "inherit" });
         return true;
     } 
@@ -36,9 +37,12 @@ for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
     console.log(`Execution Attempt ${retry + 1}`);
     console.log(`============================`);
 
-    const command = 'npx cross-env BROWSER=${browser} HEADLESS=${headless}' + 'cucumber-js' + '--config cucumber.js'+ '--tag "@${tag} and not @api"';
+    const command =
+        `npx cross-env BROWSER=${browser} HEADLESS=${headless} ` +
+        `TAG=${tag} cucumber-js --config cucumber.js ` +
+        `--tags "@${tag} and not @api"`;
 
-   console.log('Execution : ${command}');
+   console.log(`Execution: ${command}`);
     passed = runCommand(command);
 
     if (passed) {
