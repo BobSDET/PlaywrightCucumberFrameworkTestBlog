@@ -48,6 +48,12 @@ pipeline {
             }
         }
 
+        stage('Clean Reports') {
+    steps {
+        bat 'npm run clean'
+    }
+}
+
         stage('Run Tests') {
     steps {
         script {

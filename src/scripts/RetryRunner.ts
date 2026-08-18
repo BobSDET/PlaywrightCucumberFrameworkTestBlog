@@ -13,11 +13,7 @@ function runCommand(command: string): boolean {
     }
 }
 
-console.log("Cleaning reports...");
-if (!runCommand("npm run clean")) {
-    console.error("Failed to clean reports.");
-    process.exit(1);
-}
+
 
 console.log("Generating features...");
 if (!runCommand("npm run generate-feature")) {
