@@ -123,6 +123,7 @@ stage('Verify Allure Results') {
             echo ALLURE RESULTS
             echo ========================================
             dir allure-results
+            powershell -Command "Get-ChildItem allure-results -Filter *-result.json | ForEach-Object { Write-Host '---' $_.Name; Get-Content $_.FullName | Select-String '\"name\"|\"historyId\"|\"parameters\"' }"
             echo.
             echo RESULT FILE COUNT:
             powershell -Command "(Get-ChildItem allure-results -Filter *.json).Count"
