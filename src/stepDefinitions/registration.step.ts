@@ -9,13 +9,13 @@ import * as allure from "allure-js-commons";
 
 Given('User launches the Test Automation Practice application', async function () {
     const world = this as CustomWorld;
-    const browser = process.env.BROWSER || "chromium";
-    const headless = process.env.HEADLESS || "true";
-    const ci = process.env.CI || "false";
+    //const browser = process.env.BROWSER || "chromium";
+    //const headless = process.env.HEADLESS || "true";
+    //const ci = process.env.CI || "false";
 
-    await allure.parameter("Browser", browser);
+    //await allure.parameter("Browser", browser);
     //await allure.parameter("Headless", headless);
-    await allure.parameter("CI", ci);
+    //await allure.parameter("CI", ci);
    
     const config = ConfigReader.getConfig();
     
@@ -23,11 +23,11 @@ Given('User launches the Test Automation Practice application', async function (
 
 });
 
-When('User fills registration form using {string}', async function (tcId: string) {
+When(`User fills registration form using {string}`, async function (tcId: string) {
     const world = this as CustomWorld;
-    await allure.parameter("Browser", process.env.BROWSER ?? "unknown");
-    //await allure.parameter("Headless", process.env.HEADLESS ?? "false");
-    await allure.parameter("CI", process.env.CI ?? "false");
+    await allure.parameter("TestCaseId", tcId);
+
+    
         
         Logger.info(`Executing Test Case : ${tcId}`);
        world.registrationData = await world.serviceManager.registrationService.fillRegistration(tcId);
