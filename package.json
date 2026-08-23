@@ -22,7 +22,8 @@
     "sanity": "cross-env BROWSER=chromium cucumber-js --config cucumber.js --tags \"@Sanity and not @api\"",
     "smoke-report": "npm run clean && npm run generate-feature && npm run smoke && npm run allure",
     "regression-report": "npm run clean && npm run generate-feature && npm run regression && npm run allure",
-    "all": "npm run chrome-test && npm run firefox-test && npm run webkit-test",
+    "all": "npm run clean && npm run generate-feature && npm run chrome && npm run firefox && npm run webkit",
+    "all-browsers": "npm run clean && npm run generate-feature && npm run chrome && npm run firefox && npm run webkit",
     "allure": "allure generate allure-results --clean -o allure-report",
     "open-report": "allure open allure-report"
   },

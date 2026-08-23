@@ -6,27 +6,19 @@ import { Environment } from "../reporting/Environment";
 import * as fs from "fs";
 import { RetryConfig } from "../config/RetryConfig";
 import { DriverFactory } from "../Core/driver/DriverFactory";
-import * as allure from "allure-js-commons";
 import { AssertionContex } from "../assertion/AssertionContext";
-
-
-
-
+import * as allure from "allure-js-commons";
 
 Before({ tags: "not @api" }, async function (scenario) 
 {
     try{
+         const world = this as CustomWorld;
+
         const browser = process.env.BROWSER || "chromium";
     const headless = process.env.HEADLESS || "true";
     const ci = process.env.CI || "false";
 
-    await allure.parameter("Browser", browser);
-    await allure.parameter("Headless", headless);
-    await allure.parameter("CI", ci);
-
-    // existing browser initialization code...
-    const world = this as CustomWorld;
-    
+      
     console.log("================================================");
     console.log("Scenario Name:", scenario.pickle.name,); 
     console.log("================================================");
@@ -79,7 +71,7 @@ After({ tags: "not @api" }, async function (scenario) {
         
     await allure.attachment("Failure Screenshot", buffer, {contentType: "image/png", fileExtension: "png"});
 
-        console.log("================================");
+        console.log("================================");    
         console.log("Actual Error:");
         console.log(scenario.result?.message);
         console.log("================================");

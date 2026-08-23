@@ -15,11 +15,11 @@ function runCommand(command: string): boolean {
 
 
 
-console.log("Generating features...");
+/*console.log("Generating features...");
 if (!runCommand("npm run generate-feature")) {
     console.error("Failed to generate feature files.");
     process.exit(1);
-}
+}*/
 
 const browser = process.env.BROWSER || "chromium";
 const headless = process.env.HEADLESS || "true";
@@ -52,9 +52,12 @@ for (let retry = 0; retry <= RetryConfig.MAX_RETRY; retry++)
         break;
     }
 
-    if(retry == RetryConfig.MAX_RETRY)
+    if(retry < RetryConfig.MAX_RETRY)
     {
-    console.log('Some tests failed. Retrying...' + '(${retry + 1}/${RetryConfig.MAX_RETRY})' );
+    console.warn(
+        `\nTests failed. Retrying... ` +
+        `(${retry + 1}/${RetryConfig.MAX_RETRY})`
+    );
     }
     else{
         console.error("\n========================================");

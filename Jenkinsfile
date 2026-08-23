@@ -18,7 +18,7 @@ pipeline {
 
         booleanParam(
             name: 'HEADLESS',
-            defaultValue: false,
+            defaultValue: true,
             description: 'Run browser in headless mode'
         )
     }
@@ -49,89 +49,149 @@ pipeline {
         }
 
         stage('Clean Reports') {
-    steps {
-        bat 'npm run clean'
-    }
-}
+            steps {
+                bat 'npm run clean'
+            }
+        }
 
-        stage('Run Tests') {
-    steps {
-        script {
+        stage('Run Chromium') {
 
-            echo '========================================'
-            echo "Browser: ${params.BROWSER}"
-            echo "Tag: ${params.TAG}"
-            echo "Headless: ${params.HEADLESS}"
-            echo '========================================'
+            when {
+                expression {
+                    params.BROWSER == 'chromium' ||
+                    params.BROWSER == 'all'
+                }
+            }
 
-            catchError(
-                buildResult: 'FAILURE',
-                stageResult: 'FAILURE'
-            ) {
+            steps {
 
-                if (params.BROWSER == 'all') {
+                echo '========================================'
+                echo 'Running Chromium'
+                echo "Tag: ${params.TAG}"
+                echo "Headless: ${params.HEADLESS}"
+                echo '========================================'
 
-                    echo 'Running tests on ALL browsers'
-
-                    bat """
-                        echo ========================================
-                        echo Running Chromium
-                        echo ========================================
-
-                        npx cross-env BROWSER=chromium HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
-                    """
+                catchError(
+                    buildResult: 'FAILURE',
+                    stageResult: 'FAILURE'
+                ) {
 
                     bat """
-                        echo ========================================
-                        echo Running Firefox
-                        echo ========================================
-
-                        npx cross-env BROWSER=firefox HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
-                    """
-
-                    bat """
-                        echo ========================================
-                        echo Running WebKit
-                        echo ========================================
-
-                        npx cross-env BROWSER=webkit HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
-                    """
-
-                } else {
-
-                    echo "Running tests on ${params.BROWSER}"
-
-                    bat """
-                        echo ========================================
-                        echo Running ${params.BROWSER}
-                        echo Tag: ${params.TAG}
-                        echo Headless: ${params.HEADLESS}
-                        echo ========================================
-
-                        npx cross-env BROWSER=${params.BROWSER} HEADLESS=${params.HEADLESS} TAG=${params.TAG} ts-node src/scripts/RetryRunner.ts
+                        npx cross-env ^
+                        BROWSER=chromium ^
+                        HEADLESS=${params.HEADLESS} ^
+                        TAG=${params.TAG} ^
+                        ts-node src/scripts/RetryRunner.ts
                     """
                 }
             }
         }
-    }
-}
 
-stage('Verify Allure Results') {
-    steps {
-        bat '''
-            echo ========================================
-            echo ALLURE RESULTS
-            echo ========================================
-            dir allure-results
-            powershell -Command "Get-ChildItem allure-results -Filter *-result.json | ForEach-Object { Write-Host '---' $_.Name; Get-Content $_.FullName | Select-String '\"name\"|\"historyId\"|\"parameters\"' }"
-            echo.
-            echo RESULT FILE COUNT:
-            powershell -Command "(Get-ChildItem allure-results -Filter *.json).Count"
-        '''
-    }
-}
+        stage('Run Firefox') {
+
+            when {
+                expression {
+                    params.BROWSER == 'firefox' ||
+                    params.BROWSER == 'all'
+                }
+            }
+
+            steps {
+
+                echo '========================================'
+                echo 'Running Firefox'
+                echo "Tag: ${params.TAG}"
+                echo "Headless: ${params.HEADLESS}"
+                echo '========================================'
+
+                catchError(
+                    buildResult: 'FAILURE',
+                    stageResult: 'FAILURE'
+                ) {
+
+                    bat """
+                        npx cross-env ^
+                        BROWSER=firefox ^
+                        HEADLESS=${params.HEADLESS} ^
+                        TAG=${params.TAG} ^
+                        ts-node src/scripts/RetryRunner.ts
+                    """
+                }
+            }
+        }
+
+        stage('Run WebKit') {
+
+            when {
+                expression {
+                    params.BROWSER == 'webkit' ||
+                    params.BROWSER == 'all'
+                }
+            }
+
+            steps {
+
+                echo '========================================'
+                echo 'Running WebKit'
+                echo "Tag: ${params.TAG}"
+                echo "Headless: ${params.HEADLESS}"
+                echo '========================================'
+
+                catchError(
+                    buildResult: 'FAILURE',
+                    stageResult: 'FAILURE'
+                ) {
+
+                    bat """
+                        npx cross-env ^
+                        BROWSER=webkit ^
+                        HEADLESS=${params.HEADLESS} ^
+                        TAG=${params.TAG} ^
+                        ts-node src/scripts/RetryRunner.ts
+                    """
+                }
+            }
+        }
+
+        stage('Verify Allure Results') {
+
+            steps {
+
+                bat '''
+                    echo ========================================
+                    echo ALLURE RESULTS
+                    echo ========================================
+
+                    dir allure-results
+
+                    echo.
+                    echo RESULT FILE COUNT:
+
+                    powershell -Command "(Get-ChildItem allure-results -Filter *-result.json).Count"
+
+                    echo.
+                    echo TEST RESULTS:
+
+                    powershell -Command ^
+                    "Get-ChildItem allure-results -Filter *-result.json | ForEach-Object { ^
+                        $j = Get-Content $_.FullName -Raw | ConvertFrom-Json; ^
+                        Write-Host '----------------------------------------'; ^
+                        Write-Host ('TEST: ' + $j.name); ^
+                        Write-Host ('TEST CASE ID: ' + $j.testCaseId); ^
+                        Write-Host ('HISTORY ID: ' + $j.historyId); ^
+                        Write-Host ('PARAMETER COUNT: ' + $j.parameters.Count); ^
+                        if ($j.parameters.Count -gt 0) { ^
+                            $j.parameters | ForEach-Object { ^
+                                Write-Host ('PARAMETER: ' + $_.name + ' = ' + $_.value) ^
+                            } ^
+                        } ^
+                    }"
+                '''
+            }
+        }
 
         stage('Generate Allure Report') {
+
             steps {
                 bat 'npm run allure'
             }
@@ -142,21 +202,26 @@ stage('Verify Allure Results') {
 
         always {
 
-            echo 'Pipeline execution completed.'
+            echo '========================================'
+            echo 'PIPELINE EXECUTION COMPLETED'
+            echo '========================================'
 
             allure([
                 includeProperties: false,
                 jdk: '',
-                results: [[path: 'allure-results']]
+                results: [
+                    [path: 'allure-results']
+                ]
             ])
         }
 
         success {
-            echo 'TEST EXECUTION PASSED'
+            echo 'ALL TEST EXECUTIONS PASSED'
         }
 
         failure {
-            echo 'TEST EXECUTION FAILED'
+            echo 'ONE OR MORE TEST EXECUTIONS FAILED'
+            echo 'CHECK THE INDIVIDUAL BROWSER STAGES AND ALLURE REPORT'
         }
     }
 }

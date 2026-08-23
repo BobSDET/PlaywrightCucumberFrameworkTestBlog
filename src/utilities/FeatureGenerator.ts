@@ -2,7 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { TestDataManager } from "./TestDataManager";
 
+
 export class FeatureGenerator {
+    
 
     static async generateRegistrationFeature(): Promise<void> {
 
@@ -20,16 +22,11 @@ Scenario: Fill registration form - ${test.tcId}
 
 Given User launches the Test Automation Practice application
 When User fills registration form using "${test.tcId}"
-Then Registration details should be entered successfully
-
-`;
+Then Registration details should be entered successfully`;
 
     });
 
-    const outputDir = path.join(
-        process.cwd(),
-        "generated-features"
-    );
+    const outputDir = path.join(process.cwd(), "generated-features");
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
