@@ -54,6 +54,23 @@ pipeline {
             }
         }
 
+    stage('Generate Features') {
+    steps {
+        bat '''
+            echo ========================================
+            echo GENERATING FEATURE FILES
+            echo ========================================
+
+            npm run generate-feature
+
+            echo.
+            echo ========================================
+            echo FEATURE GENERATION COMPLETED
+            echo ========================================
+        '''
+    }
+}
+
     stage('Verify Generated Features') {
     steps {
         bat '''
