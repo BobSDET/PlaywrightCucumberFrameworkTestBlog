@@ -153,43 +153,6 @@ pipeline {
             }
         }
 
-        stage('Verify Allure Results') {
-
-            steps {
-
-                bat '''
-                    echo ========================================
-                    echo ALLURE RESULTS
-                    echo ========================================
-
-                    dir allure-results
-
-                    echo.
-                    echo RESULT FILE COUNT:
-
-                    powershell -Command "(Get-ChildItem allure-results -Filter *-result.json).Count"
-
-                    echo.
-                    echo TEST RESULTS:
-
-                    powershell -Command ^
-                    "Get-ChildItem allure-results -Filter *-result.json | ForEach-Object { ^
-                        $j = Get-Content $_.FullName -Raw | ConvertFrom-Json; ^
-                        Write-Host '----------------------------------------'; ^
-                        Write-Host ('TEST: ' + $j.name); ^
-                        Write-Host ('TEST CASE ID: ' + $j.testCaseId); ^
-                        Write-Host ('HISTORY ID: ' + $j.historyId); ^
-                        Write-Host ('PARAMETER COUNT: ' + $j.parameters.Count); ^
-                        if ($j.parameters.Count -gt 0) { ^
-                            $j.parameters | ForEach-Object { ^
-                                Write-Host ('PARAMETER: ' + $_.name + ' = ' + $_.value) ^
-                            } ^
-                        } ^
-                    }"
-                '''
-            }
-        }
-
         stage('Generate Allure Report') {
 
             steps {
