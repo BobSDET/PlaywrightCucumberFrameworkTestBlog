@@ -9,13 +9,13 @@ import * as allure from "allure-js-commons";
 
 Given('User launches the Test Automation Practice application', async function () {
     const world = this as CustomWorld;
-    //const browser = process.env.BROWSER || "chromium";
-    //const headless = process.env.HEADLESS || "true";
-    //const ci = process.env.CI || "false";
+    const browser = process.env.BROWSER || "chromium";
+    const headless = process.env.HEADLESS || "true";
+    const ci = process.env.CI || "false";
 
-    //await allure.parameter("Browser", browser);
-    //await allure.parameter("Headless", headless);
-    //await allure.parameter("CI", ci);
+    await allure.parameter("Browser", browser);
+    await allure.parameter("Headless", headless);
+    await allure.parameter("CI", ci);
    
     const config = ConfigReader.getConfig();
     
