@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const folder = ["allure-report", "allure-results", "reports/screenshots", "reports/traces", "generated-feature"]
+const folder = ["allure-report", "allure-results", "reports/screenshots", "reports/traces", "generated-features"]
 
 folder.forEach(folder => {
     const folderpath = path.join(process.cwd(), folder);

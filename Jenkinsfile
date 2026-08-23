@@ -54,6 +54,40 @@ pipeline {
             }
         }
 
+    stage('Verify Generated Features') {
+    steps {
+        bat '''
+            echo ========================================
+            echo VERIFYING GENERATED FEATURES
+            echo ========================================
+
+            echo.
+            echo Current directory:
+            cd
+
+            echo.
+            echo Generated-features folder:
+            dir generated-features
+
+            echo.
+            echo Feature files:
+            dir generated-features\\*.feature
+
+            echo.
+            echo FEATURE FILE COUNT:
+            powershell -Command "(Get-ChildItem .\\generated-features -Filter *.feature -ErrorAction SilentlyContinue).Count"
+
+            echo.
+            echo FEATURE CONTENT:
+            powershell -Command "Get-ChildItem .\\generated-features -Filter *.feature -ErrorAction SilentlyContinue | ForEach-Object { Write-Host ('===== ' + $_.FullName + ' ====='); Get-Content $_.FullName }"
+
+            echo.
+            echo ========================================
+            echo END GENERATED FEATURE VERIFICATION
+            echo ========================================
+        '''
+    }
+}
         stage('Run Chromium') {
 
             when {
