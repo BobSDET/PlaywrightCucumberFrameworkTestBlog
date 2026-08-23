@@ -7,8 +7,7 @@ Feature: Registration Form
     When User fills registration form using "<TestCaseId>"
 
     Then Registration details should be entered successfully
-    
-    essfully
+
 
     Examples:
       | TestCaseId |
