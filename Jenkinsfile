@@ -24,7 +24,7 @@ pipeline {
     }
 
     environment {
-        CI = 'true',
+        CI = 'true'
         DOCKER_IMAGE = 'playwright-cucumber-tests'
     }
 
@@ -52,7 +52,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Docker Test') {
     steps {
         bat 'docker version'
