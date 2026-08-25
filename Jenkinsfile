@@ -76,7 +76,7 @@ pipeline {
             }
         }
 
-        stage('Node Version') {
+       /* stage('Node Version') {
             steps {
                 bat 'node -v'
                 bat 'npm -v'
@@ -89,7 +89,7 @@ pipeline {
             }
         }
 
-       /* stage('Clean Reports') {
+        stage('Clean Reports') {
             steps {
                 bat 'npm run clean'
             }
