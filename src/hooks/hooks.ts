@@ -14,17 +14,17 @@ Before({ tags: "not @api" }, async function (scenario)
     try{
          const world = this as CustomWorld;
 
-        const browser = process.env.BROWSER || "chromium";
-    const headless = process.env.HEADLESS || "true";
-    const ci = process.env.CI || "false";
+       // const browser = process.env.BROWSER || "chromium";
+    //const headless = process.env.HEADLESS || "true";
+    //const ci = process.env.CI || "false";
 
-    await allure.parameter("Browser", browser);
-    await allure.parameter("Headless", headless);
-    await allure.parameter("CI", ci);
+    //await allure.parameter("Browser", browser);
+    //await allure.parameter("Headless", headless);
+   // await allure.parameter("CI", ci);
 
-    //await allure.parameter("Browser", process.env.BROWSER ?? "unknown");
-        //await allure.parameter("Headless", process.env.HEADLESS ?? "false");
-        //await allure.parameter("CI", process.env.CI ?? "false");
+    await allure.parameter("Browser", process.env.BROWSER ?? "unknown");
+        await allure.parameter("Headless", process.env.HEADLESS ?? "false");
+        await allure.parameter("CI", process.env.CI ?? "false");
             
       
     console.log("================================================");

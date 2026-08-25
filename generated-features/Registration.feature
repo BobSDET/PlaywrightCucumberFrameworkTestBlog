@@ -1,16 +1,21 @@
 Feature: Registration Form
 
-  Scenario Outline: Fill registration form - <TestCaseId>
 
-    Given User launches the Test Automation Practice application
+@Smoke
+Scenario: Fill registration form - TC001
 
-    When User fills registration form using "<TestCaseId>"
+Given User launches the Test Automation Practice application
+When User fills registration form using "TC001"
+Then Registration details should be entered successfully
+@Regression
+Scenario: Fill registration form - TC002
 
-    Then Registration details should be entered successfully
+Given User launches the Test Automation Practice application
+When User fills registration form using "TC002"
+Then Registration details should be entered successfully
+@Smoke @Regression
+Scenario: Fill registration form - TC003
 
-
-    Examples:
-      | TestCaseId |
-      | TC001      |
-      | TC002      |
-      | TC003      |
+Given User launches the Test Automation Practice application
+When User fills registration form using "TC003"
+Then Registration details should be entered successfully

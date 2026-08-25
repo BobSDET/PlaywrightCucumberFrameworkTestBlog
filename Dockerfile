@@ -13,4 +13,4 @@ ENV HEADLESS=true
 ENV BROWSER=chromium
 ENV TAG=Smoke
 
-CMD ["npx", "ts-node", "src/scripts/RetryRunner.ts"]
+CMD ["sh", "-c", "npm run clean && npm run generate-feature; TEST_EXIT=$?; if [ -d /app/allure-results ]; then mkdir -p /docker-output && cp -a /app/allure-results/. /docker-output/; fi; exit $TEST_EXIT"]

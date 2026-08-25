@@ -24,7 +24,8 @@ pipeline {
     }
 
     environment {
-        CI = 'true'
+        CI = 'true',
+        DOCKER_IMAGE = 'playwright-cucumber-tests'
     }
 
     stages {
@@ -32,6 +33,46 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+
+                bat '''
+                    echo ========================================
+                    echo BUILDING PLAYWRIGHT DOCKER IMAGE
+                    echo ========================================
+
+                    docker build -t %DOCKER_IMAGE% .
+
+                    echo.
+                    echo Docker image built successfully.
+                    echo ========================================
+                '''
+            }
+        }
+        
+        stage('Docker Test') {
+    steps {
+        bat 'docker version'
+        bat 'docker images playwright-cucumber-tests'
+    }
+}
+        stage('Prepare Allure Directories') {
+            steps {
+
+                bat '''
+                    if exist allure-results rmdir /s /q allure-results
+                    if exist allure-results-chromium rmdir /s /q allure-results-chromium
+                    if exist allure-results-firefox rmdir /s /q allure-results-firefox
+                    if exist allure-results-webkit rmdir /s /q allure-results-webkit
+
+                    mkdir allure-results
+                    mkdir allure-results-chromium
+                    mkdir allure-results-firefox
+                    mkdir allure-results-webkit
+                '''
             }
         }
 
@@ -48,7 +89,7 @@ pipeline {
             }
         }
 
-        stage('Clean Reports') {
+       /* stage('Clean Reports') {
             steps {
                 bat 'npm run clean'
             }
@@ -104,7 +145,7 @@ pipeline {
             echo ========================================
         '''
     }
-}
+}*/
         stage('Run Chromium') {
 
             when {
@@ -116,26 +157,34 @@ pipeline {
 
             steps {
 
-                echo '========================================'
-                echo 'Running Chromium'
-                echo "Tag: ${params.TAG}"
-                echo "Headless: ${params.HEADLESS}"
-                echo '========================================'
+        echo '========================================'
+        echo 'Running Chromium in Docker'
+        echo "Tag: ${params.TAG}"
+        echo "Headless: ${params.HEADLESS}"
+        echo '========================================'
 
-                catchError(
-                    buildResult: 'FAILURE',
-                    stageResult: 'FAILURE'
-                ) {
+        bat '''
+            if exist allure-results rmdir /s /q allure-results
+            mkdir allure-results
+        '''
 
-                    bat """
-                        npx cross-env ^
-                        BROWSER=chromium ^
-                        HEADLESS=${params.HEADLESS} ^
-                        TAG=${params.TAG} ^
-                        ts-node src/scripts/RetryRunner.ts
-                    """
-                }
-            }
+        catchError(
+            buildResult: 'FAILURE',
+            stageResult: 'FAILURE'
+        ) {
+
+            bat """
+                docker run --rm ^
+                  --name playwright-cucumber-chromium ^
+                  -e CI=true ^
+                  -e BROWSER=chromium ^
+                  -e HEADLESS=${params.HEADLESS} ^
+                  -e TAG=${params.TAG} ^
+                  -v "%WORKSPACE%\\allure-results:/docker-output" ^
+                  playwright-cucumber-tests
+            """
+        }
+    }
         }
 
         stage('Run Firefox') {
@@ -149,26 +198,29 @@ pipeline {
 
             steps {
 
-                echo '========================================'
-                echo 'Running Firefox'
-                echo "Tag: ${params.TAG}"
-                echo "Headless: ${params.HEADLESS}"
-                echo '========================================'
+        echo '========================================'
+        echo 'Running Firefox in Docker'
+        echo "Tag: ${params.TAG}"
+        echo "Headless: ${params.HEADLESS}"
+        echo '========================================'
 
-                catchError(
-                    buildResult: 'FAILURE',
-                    stageResult: 'FAILURE'
-                ) {
+        catchError(
+            buildResult: 'FAILURE',
+            stageResult: 'FAILURE'
+        ) {
 
-                    bat """
-                        npx cross-env ^
-                        BROWSER=firefox ^
-                        HEADLESS=${params.HEADLESS} ^
-                        TAG=${params.TAG} ^
-                        ts-node src/scripts/RetryRunner.ts
-                    """
-                }
-            }
+            bat """
+                docker run --rm ^
+                  --name playwright-cucumber-firefox ^
+                  -e CI=true ^
+                  -e BROWSER=firefox ^
+                  -e HEADLESS=${params.HEADLESS} ^
+                  -e TAG=${params.TAG} ^
+                  -v "%WORKSPACE%\\allure-results:/docker-output" ^
+                  playwright-cucumber-tests
+            """
+        }
+    }
         }
 
         stage('Run WebKit') {
@@ -182,65 +234,84 @@ pipeline {
 
             steps {
 
-                echo '========================================'
-                echo 'Running WebKit'
-                echo "Tag: ${params.TAG}"
-                echo "Headless: ${params.HEADLESS}"
-                echo '========================================'
+        echo '========================================'
+        echo 'Running WebKit in Docker'
+        echo "Tag: ${params.TAG}"
+        echo "Headless: ${params.HEADLESS}"
+        echo '========================================'
 
-                catchError(
-                    buildResult: 'FAILURE',
-                    stageResult: 'FAILURE'
-                ) {
+        catchError(
+            buildResult: 'FAILURE',
+            stageResult: 'FAILURE'
+        ) {
 
-                    bat """
-                        npx cross-env ^
-                        BROWSER=webkit ^
-                        HEADLESS=${params.HEADLESS} ^
-                        TAG=${params.TAG} ^
-                        ts-node src/scripts/RetryRunner.ts
-                    """
-                }
+            bat """
+                docker run --rm ^
+                  --name playwright-cucumber-webkit ^
+                  -e CI=true ^
+                  -e BROWSER=webkit ^
+                  -e HEADLESS=${params.HEADLESS} ^
+                  -e TAG=${params.TAG} ^
+                  -v "%WORKSPACE%\\allure-results:/docker-output" ^
+                  playwright-cucumber-tests
+            """
+        }
+    }
+        }
+
+        stage('Merge Allure Results') {
+
+            steps {
+
+                bat '''
+                    echo ========================================
+                    echo MERGING ALLURE RESULTS
+                    echo ========================================
+
+                    powershell -NoProfile -Command ^
+                    "Copy-Item -Path '.\\allure-results-chromium\\*' -Destination '.\\allure-results' -Recurse -Force -ErrorAction SilentlyContinue"
+
+                    powershell -NoProfile -Command ^
+                    "Copy-Item -Path '.\\allure-results-firefox\\*' -Destination '.\\allure-results' -Recurse -Force -ErrorAction SilentlyContinue"
+
+                    powershell -NoProfile -Command ^
+                    "Copy-Item -Path '.\\allure-results-webkit\\*' -Destination '.\\allure-results' -Recurse -Force -ErrorAction SilentlyContinue"
+
+                    echo.
+                    echo Final Allure results:
+                    dir allure-results
+
+                    echo.
+                    echo RESULT FILE COUNT:
+                    powershell -NoProfile -Command ^
+                    "(Get-ChildItem '.\\allure-results' -Filter '*-result.json' -ErrorAction SilentlyContinue).Count"
+
+                    echo ========================================
+                '''
             }
         }
 
         stage('Verify Allure Results') {
     steps {
         bat '''
-            echo ========================================
-            echo VERIFYING ALLURE RESULTS
-            echo ========================================
+                    echo ========================================
+                    echo VERIFYING ALLURE RESULTS
+                    echo ========================================
 
-            echo.
-            echo Contents of allure-results:
-            dir allure-results
+                    powershell -NoProfile -Command ^
+                    "Get-ChildItem '.\\allure-results' -Filter '*-result.json' | ForEach-Object { $j = Get-Content $_.FullName -Raw | ConvertFrom-Json; Write-Host ('TEST: ' + $j.name); Write-Host ('HISTORY ID: ' + $j.historyId); Write-Host ('PARAMETERS: ' + $j.parameters.Count); Write-Host '' }"
 
-            echo.
-            echo Result JSON files:
-            dir allure-results\\*-result.json
-
-            echo.
-            echo RESULT FILE COUNT:
-            powershell -Command "(Get-ChildItem .\\allure-results -Filter *-result.json).Count"
-
-            echo.
-            echo TEST NAMES:
-            powershell -Command "Get-ChildItem .\\allure-results -Filter *-result.json | ForEach-Object { $j = Get-Content $_.FullName -Raw | ConvertFrom-Json; Write-Host ('TEST: ' + $j.name); Write-Host ('HISTORY ID: ' + $j.historyId); Write-Host ('PARAMETERS: ' + $j.parameters.Count); Write-Host '' }"
-
-            echo.
-            echo ========================================
-            echo END ALLURE VERIFICATION
-            echo ========================================
-        '''
+                    echo ========================================
+                '''
     }
 }
 
-        stage('Generate Allure Report') {
+        /*stage('Generate Allure Report') {
 
             steps {
                 bat 'npm run allure'
             }
-        }
+        }*/
     }
 
     post {
